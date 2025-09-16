@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: block;
+      margin: 8px auto;
+      padding: 10px 15px;
+      width: 100%;
+      border: none;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #2563eb;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz App</h1>
+
+    <!-- Category Selection -->
+    <div id="category-screen">
+      <h2>Choose a Category</h2>
+      <button class="btn" onclick="startQuiz('geography')">Geography</button>
+      <button class="btn" onclick="startQuiz('history')">History</button>
+      <button class="btn" onclick="startQuiz('math')">Math</button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden">
+      <h2 id="question">Question</h2>
+      <div id="answer-buttons"></div>
+      <button class="btn" id="next-btn" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <!-- Score Screen -->
+    <div id="score-screen" class="hidden">
+      <h2>Quiz Finished!</h2>
+      <p class="score" id="final-score"></p>
+      <button class="btn" onclick="restart()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = {
+      geography: [
+        { question: "What is the capital of France?", answers: ["Paris", "London", "Berlin", "Rome"], correct: 0 },
+        { question: "Which continent is Egypt in?", answers: ["Asia", "Europe", "Africa", "South America"], correct: 2 },
+        { question: "What is the longest river?", answers: ["Amazon", "Nile", "Yangtze", "Mississippi"], correct: 1 }
+      ],
+      history: [
+        { question: "Who was the first President of the USA?", answers: ["George Washington", "Abraham Lincoln", "John Adams", "Thomas Jefferson"], correct: 0 },
+        { question: "In which year did World War II end?", answers: ["1940", "1945", "1950", "1939"], correct: 1 },
+        { question: "Which empire built the Colosseum?", answers: ["Greek", "Roman", "Ottoman", "Persian"], correct: 1 }
+      ],
+      math: [
+        { question: "What is 12 × 8?", answers: ["96", "86", "102", "88"], correct: 0 },
+        { question: "Square root of 81?", answers: ["7", "8", "9", "10"], correct: 2 },
+        { question: "What is 15 ÷ 3?", answers: ["3", "4", "5", "6"], correct: 2 }
+      ]
+    };
+
+    let currentCategory = null;
+    let currentIndex = 0;
+    let score = 0;
+
+    const categoryScreen = document.getElementById("category-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const scoreScreen = document.getElementById("score-screen");
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answer-buttons");
+    const nextBtn = document.getElementById("next-btn");
+    const finalScore = document.getElementById("final-score");
+
+    function startQuiz(category) {
+      currentCategory = category;
+      currentIndex = 0;
+      score = 0;
+
+      categoryScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      resetState();
+      let question = questions[currentCategory][currentIndex];
+      questionEl.textContent = question.question;
+
+      question.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.textContent = answer;
+        button.classList.add("btn");
+        button.onclick = () => selectAnswer(index);
+        answersEl.appendChild(button);
+      });
+    }
+
+    function resetState() {
+      nextBtn.style.display = "none";
+      answersEl.innerHTML = "";
+    }
+
+    function selectAnswer(index) {
+      let question = questions[currentCategory][currentIndex];
+      if (index === question.correct) {
+        score++;
+      }
+      nextBtn.style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < questions[currentCategory].length) {
+        showQuestion();
+      } else {
+        endQuiz();
+      }
+    }
+
+    function endQuiz() {
+      quizScreen.classList.add("hidden");
+      scoreScreen.classList.remove("hidden");
+      finalScore.textContent = `You scored ${score} out of ${questions[currentCategory].length}`;
+    }
+
+    function restart() {
+      scoreScreen.classList.add("hidden");
+      categoryScreen.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
